@@ -12,13 +12,15 @@ function [] = batchProcess(funhandle, indir, varargin)
 %
 %       'InputExtension' -- A string value of input file extensions, for
 %           example, BATCHPROCESS(@foo, INDIR, 'InputExtension','.jpg')
-%           will only convert jpg files in INDIR.
+%           will only process jpg files in INDIR.
 %
 %       'StartWith' -- File to start processing, default is empty.
 %
 %       'EndWith' -- File to end processing, default is empty.
 %
 %       'Verbose' -- verbose the processing, false by default.
+%
+%       'Parallel' -- Processing in parallel, false by default.
 %
 
 %%  checking minimum arguments requried
@@ -31,8 +33,8 @@ try
 catch err
     if strcmp(err.identifier,'MATLAB:narginchk:notEnoughInputs')
         error('batchProcess:notEnoughInputs',...
-             ['Not enough inputs, at least %d arguments are needed. '...
-              'Including indir, outdir and function handle.'],minargs);
+              ['Not enough inputs, at least %d arguments are needed. '...
+              'Including indir and function handle.'],minargs);
     else
         rethrow(err);
     end
@@ -41,7 +43,8 @@ end
 %%  default parameters
 opts = struct('inputextension', '',...
               'startwith', '', 'endwith', '',...
-              'verbose', false);
+              'verbose', false,...
+              'parallel', false);
 optnames = fieldnames(opts); %   case insensitive
 
 %%  override default parameters
@@ -68,28 +71,49 @@ else
     startProcess = false;
 end
 
+infiles={};
 for i = 1:length(sourcefile)
     if strcmp(sourcefile(i).name(1),'.')
-       continue;
-    end
-    infile = [indir '/' sourcefile(i).name];
+     continue;
+ end
+ infile = [indir '/' sourcefile(i).name];
+ [~,name,ext] = fileparts(infile);
 
-
-    if ~startProcess && any(strfind(infile, opts.startwith))
-        startProcess = true;
-    end
-
-    if any(strfind(infile, opts.endwith))
-        break;
-    end
-
-    if startProcess
-        if opts.verbose
-            displayString = sprintf('Processing %s.', infile);
-            disp(displayString);
-        end
-        funhandle(infile);
-    end
+ if ~startProcess && any(strfind(infile, opts.startwith))
+    startProcess = true;
 end
 
+if any(strfind(infile, opts.endwith))
+    break;
+end
+
+if startProcess
+    infiles{end+1} = infile;
+end
+end
+
+if opts.parallel
+    parfor i = 1:length(infiles)
+        if opts.verbose
+            disp(sprintf('Processing %s.', infile));
+        end
+        try
+          funhandle(infile);
+        catch err
+            disp(sprintf('ERROR: %s\ninfile: %s\n',...
+                err.identifier, infiles{i}));
+        end
+    end
+else
+    for i = 1:length(infiles)
+        if opts.verbose
+            disp(sprintf('Processing %s.', infile));
+        end
+        try
+            funhandle(infile);
+        catch err
+            disp(sprintf('ERROR: %s\ninfile: %s\n',...
+                err.identifier, infiles{i}));
+        end
+    end
 end
