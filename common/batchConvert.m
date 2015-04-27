@@ -29,7 +29,9 @@ function [] = batchConvert(funhandle, indir, outdir, varargin)
 %
 %       'EndWith' -- File to end conversion, default is empty.
 %
-%       'Verbose' -- verbose the conversion, false by default.
+%       'Verbose' -- Verbose the conversion, false by default.
+%
+%       'Parallel' -- Conversion in parallel, false by default.
 %
 
 %%  checking minimum arguments requried
@@ -53,7 +55,8 @@ end
 opts = struct('samebasename', true, 'sameextension', true,...
               'inputextension', '', 'outputextension', '',...
               'startwith', '', 'endwith', '',...
-              'verbose', false);
+              'verbose', false,...
+              'parallel', false);
 optnames = fieldnames(opts); %   case insensitive
 
 %%  override default parameters
@@ -122,15 +125,31 @@ for i = 1:length(sourcefile)
     end
 end
 
-parfor i=1:length(infiles)
-    if opts.verbose
-        disp(sprintf('Converting %s to %s.', infiles{i}, outfiles{i}));
+if opts.parallel
+    disp('Converting in parallel...');
+    parfor i=1:length(infiles)
+        if opts.verbose
+            disp(sprintf('Converting %s to %s.', infiles{i}, outfiles{i}));
+        end
+        try
+            funhandle(infiles{i}, outfiles{i});
+        catch err
+            disp(sprintf('ERROR: %s\ninfile: %s\noutfile: %s\n',...
+                    err.identifier, infiles{i}, outfiles{i}));
+        end
     end
-    try
-        funhandle(infiles{i}, outfiles{i});
-    catch err
-        disp(sprintf('ERROR: %s\ninfile: %s\noutfile: %s\n',...
-                err.identifier, infiles{i}, outfiles{i}));
+else
+    disp('Converting in sequence...');
+    for i=1:length(infiles)
+        if opts.verbose
+            disp(sprintf('Converting %s to %s.', infiles{i}, outfiles{i}));
+        end
+        try
+            funhandle(infiles{i}, outfiles{i});
+        catch err
+            disp(sprintf('ERROR: %s\ninfile: %s\noutfile: %s\n',...
+                    err.identifier, infiles{i}, outfiles{i}));
+        end
     end
 end
 
