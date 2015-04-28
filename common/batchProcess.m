@@ -95,10 +95,10 @@ end
 if opts.parallel
     parfor i = 1:length(infiles)
         if opts.verbose
-            disp(sprintf('Processing %s.', infile));
+            disp(sprintf('Processing %s.', infiles{i}));
         end
         try
-          funhandle(infile);
+          funhandle(infiles{i});
         catch err
             disp(sprintf('ERROR: %s\ninfile: %s\n',...
                 err.identifier, infiles{i}));
@@ -107,10 +107,10 @@ if opts.parallel
 else
     for i = 1:length(infiles)
         if opts.verbose
-            disp(sprintf('Processing %s.', infile));
+            disp(sprintf('Processing %s.', infiles{i}));
         end
         try
-            funhandle(infile);
+            funhandle(infiles{i});
         catch err
             disp(sprintf('ERROR: %s\ninfile: %s\n',...
                 err.identifier, infiles{i}));
