@@ -22,6 +22,7 @@ function [] = batchProcess(funhandle, indir, varargin)
 %
 %       'Parallel' -- Processing in parallel, false by default.
 %
+%   See also BATCHCOMBINE, BATCHCONVERT.
 
 %%  checking minimum arguments requried
 minargs = 2;

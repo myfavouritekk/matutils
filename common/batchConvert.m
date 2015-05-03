@@ -33,6 +33,7 @@ function [] = batchConvert(funhandle, indir, outdir, varargin)
 %
 %       'Parallel' -- Conversion in parallel, false by default.
 %
+%   See also BATCHCOMBINE, BATCHPROCESS.
 
 %%  checking minimum arguments requried
 minargs = 3;

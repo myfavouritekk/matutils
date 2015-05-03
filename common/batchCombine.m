@@ -20,6 +20,7 @@ function [combination] = batchCombine(funhandle, indir, varargin)
 %
 %       'Verbose' -- verbose the processing, false by default.
 %
+%   See also BATCHCONVERT, BATCHPROCESS.
 
 %%  checking minimum arguments requried
 minargs = 2;
