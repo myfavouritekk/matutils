@@ -126,6 +126,8 @@ for i = 1:length(sourcefile)
     end
 end
 
+disp(sprintf('Find %d files in total.', length(infiles)));
+
 if opts.parallel
     disp('Converting in parallel...');
     parfor i=1:length(infiles)

@@ -93,6 +93,8 @@ if startProcess
 end
 end
 
+disp(sprintf('Find %d files in total.', length(infiles)));
+
 if opts.parallel
     parfor i = 1:length(infiles)
         if opts.verbose

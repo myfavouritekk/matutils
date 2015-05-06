@@ -99,4 +99,6 @@ end
 
 combination = tmpCombine(1:n);
 
+disp(sprintf('Combined %d files in total.', n));
+
 end
