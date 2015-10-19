@@ -96,20 +96,20 @@ for i = 1:length(sourcefile)
     if strcmp(sourcefile(i).name(1),'.')
        continue;
     end
-    infile = [indir '/' sourcefile(i).name];
-    outfile = outdir;
+    infile = fullfile(indir, sourcefile(i).name);
     [~,name,ext] = fileparts(infile);
+    name = strrep([name, ext], opts.inputextension, '');
 
     if opts.samebasename
-        outfile = fullfile(outfile, name);
+        outfile = fullfile(outdir, name);
     else
-        outfile = fullfile(outfile, sprintf(digitformat, i));
+        outfile = fullfile(outdir, sprintf(digitformat, i));
     end
 
     if ~isempty(opts.outputextension)
         outfile = [outfile opts.outputextension];
     elseif opts.sameextension
-        outfile = [outfile ext];
+        outfile = [outfile opts.inputextension];
     end
 
     if ~startConversion && any(strfind(infile, opts.startwith))
